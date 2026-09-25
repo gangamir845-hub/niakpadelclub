@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رزروهای من — NIAK Padel Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .page-hero{
+    background:var(--court-green);
+    color:var(--line-white);
+    padding:40px 0 54px;
+  }
+  .page-hero .wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+  .page-hero .icon{
+    width:64px;height:64px;border-radius:50%;flex:none;
+    background:rgba(244,240,230,.14);
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;
+  }
+  .page-hero h1{font-size:clamp(24px,4vw,34px);font-weight:800;margin:0 0 8px;}
+  .page-hero p{margin:0;color:#e7e2d3;font-size:15.5px;max-width:46ch;}
+
+  .lookup-panel{
+    background:var(--surface);
+    border-radius:22px 22px 22px 6px;
+    padding:26px 28px;
+    box-shadow:var(--shadow-soft);
+    border:1px solid var(--border);
+    margin-bottom:28px;
+  }
+  .lookup-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:6px;flex:1 1 240px;}
+  .field label{font-size:13px;color:var(--muted);font-weight:600;}
+  input[type=tel]{
+    font-family:inherit;
+    border:1.5px solid var(--input-border);
+    border-radius:10px;
+    padding:11px 14px;
+    font-size:15px;
+    background:var(--surface-2);
+    color:var(--ink);
+    direction:ltr;
+    text-align:right;
+  }
+  input:focus{outline:2px solid var(--court-green-light);outline-offset:1px;}
+
+  .lookup-msg{
+    margin-top:14px;font-size:14.5px;font-weight:600;
+    padding:12px 16px;border-radius:10px;
+  }
+  .lookup-msg.err{background:var(--err-bg);color:var(--err-ink);}
+  .lookup-msg.ok{background:var(--ok-bg);color:var(--ok-ink);}
+
+  .bk-list{display:flex;flex-direction:column;gap:14px;}
+  .bk-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px 16px 16px 5px;
+    padding:18px 20px;
+    box-shadow:var(--shadow-soft);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .bk-card.past{opacity:.55;}
+  .bk-main{display:flex;flex-direction:column;gap:4px;}
+  .bk-date{font-weight:800;font-size:15.5px;}
+  .bk-meta{color:var(--muted);font-size:13.5px;}
+  .bk-code{
+    font-variant-numeric:tabular-nums;letter-spacing:.03em;direction:ltr;
+    display:inline-block;margin-top:2px;font-size:12.5px;color:var(--num-soft);
+  }
+  .bk-badge{
+    font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;
+    background:var(--ok-bg);color:var(--ok-ink);white-space:nowrap;
+  }
+  .bk-badge.past{background:var(--surface-2);color:var(--muted);}
+  .bk-cancel{
+    border:1.5px solid var(--err-ink);color:var(--err-ink);background:transparent;
+    border-radius:10px;padding:8px 16px;font-size:13.5px;font-weight:700;
+    font-family:inherit;cursor:pointer;white-space:nowrap;
+    box-shadow:0 3px 0 var(--err-ink), 0 6px 10px rgba(184,67,31,.18);
+    transform:translateY(0);
+    transition:transform .1s ease, box-shadow .1s ease, background .15s ease;
+  }
+  .bk-cancel:hover{background:var(--err-bg);}
+  .bk-cancel:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--err-ink);}
+  .bk-cancel:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;}
+  .bk-empty{
+    text-align:center;color:var(--muted);padding:34px 10px;font-size:14.5px;
+  }
+
+  @media (max-width:560px){
+    .modal-backdrop{padding:14px;}
+    .modal-card{padding:20px 18px 18px;border-radius:18px 18px 18px 6px;}
+    .modal-icon{width:48px;height:48px;font-size:22px;margin-bottom:10px;}
+    .modal-title{font-size:17.5px;}
+    .lookup-row{flex-direction:column;align-items:stretch;}
+    .bk-card{flex-direction:column;align-items:flex-start;}
+  }
+
+  /* ---- پنجره‌ی تأیید و پیام لغو رزرو ---- */
+  .modal-backdrop{
+    position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
+    padding:20px;background:rgba(12,26,23,.55);backdrop-filter:blur(4px);
+    overflow-y:auto;
+    opacity:0;pointer-events:none;transition:opacity .22s ease;
+  }
+  .modal-backdrop.open{opacity:1;pointer-events:auto;}
+  .modal-card{
+    width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);
+    border-radius:20px 20px 20px 6px;box-shadow:var(--shadow-lift);
+    padding:26px 24px 22px;text-align:center;margin:auto;
+    transform:translateY(14px) scale(.97);transition:transform .22s cubic-bezier(.2,.8,.3,1);
+  }
+  .modal-backdrop.open .modal-card{transform:translateY(0) scale(1);}
+  .modal-icon{
+    width:56px;height:56px;margin:0 auto 14px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:26px;
+    background:var(--err-bg);color:var(--err-ink);
+  }
+  .modal-card.is-ok .modal-icon{background:var(--ok-bg);color:var(--ok-ink);}
+  .modal-title{font-size:19px;font-weight:800;margin:0 0 8px;}
+  .modal-text{font-size:14px;color:var(--muted);line-height:1.85;margin:0;}
+  .modal-booking{
+    margin:16px 0 4px;padding:12px 14px;border-radius:14px;
+    background:var(--surface-2);border:1px solid var(--border);
+    font-size:13.5px;line-height:1.9;text-align:right;
+  }
+  .modal-booking b{font-weight:800;}
+  .modal-booking .modal-code{
+    direction:ltr;display:inline-block;font-variant-numeric:tabular-nums;
+    color:var(--num-soft);font-size:12.5px;
+  }
+  .modal-terms{
+    margin-top:12px;padding:11px 13px;border-radius:12px;
+    background:var(--err-bg);color:var(--err-ink);font-size:12.8px;line-height:1.8;text-align:right;
+  }
+  .modal-card.is-ok .modal-terms{background:var(--ok-bg);color:var(--ok-ink);}
+  .modal-actions{display:flex;gap:10px;margin-top:20px;}
+  .modal-actions button{
+    flex:1;font-family:inherit;font-size:14px;font-weight:700;border-radius:12px;
+    padding:12px 10px;cursor:pointer;border:1.5px solid transparent;
+    transition:transform .1s ease, box-shadow .1s ease, background .15s ease;
+  }
+  .modal-actions button:active{transform:translateY(2px);}
+  .modal-danger{
+    background:var(--err-ink);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.22);
+  }
+  .modal-danger:hover{filter:brightness(1.07);}
+  .modal-ghost{
+    background:transparent;border-color:var(--input-border)!important;color:var(--ink);
+  }
+  .modal-ghost:hover{background:var(--surface-2);}
+  .modal-single{
+    background:var(--court-green);color:var(--line-white);box-shadow:0 3px 0 rgba(0,0,0,.22);
+  }
+  .modal-danger:disabled,.modal-ghost:disabled{opacity:.55;cursor:not-allowed;}
+</style>
+</head>
+<body>
+
+<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+  <div class="modal-card" id="modal-card">
+    <div class="modal-icon" id="modal-icon">!</div>
+    <h2 class="modal-title" id="modal-title">لغو رزرو؟</h2>
+    <p class="modal-text" id="modal-text"></p>
+    <div class="modal-booking" id="modal-booking" hidden></div>
+    <div class="modal-terms" id="modal-terms" hidden></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<div class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <img src="../assets/logo-circle.png" alt="NIAK Padel Club">
+      <span>NIAK PADEL CLUB</span>
+    </a>
+    <div class="site-nav">
+      <a href="../padel/index.html">رزرو زمین</a>
+      <a href="../menu/index.html">منوی کافه</a>
+      <a href="index.html" class="active">رزروهای من</a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="wrap">
+    <div class="icon">📋</div>
+    <div>
+      <h1>رزروهای من</h1>
+      <p>شماره تلفنی که موقع رزرو دادی رو وارد کن تا لیست رزروهات رو ببینی و در صورت نیاز لغوشون کنی. <span class="hero-note">(در صورت لغو رزرو، با همان شماره‌ای که رزرو با آن ثبت شده تماس گرفته می‌شود و ۹۲ درصد مبلغ پرداختی بازگردانده می‌شود.)</span></p>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" style="padding-top:32px;padding-bottom:60px;">
+
+  <div class="lookup-panel">
+    <div class="lookup-row">
+      <div class="field">
+        <label for="phone-input">شماره تلفن <span class="field-hint">(با اعداد انگلیسی تایپ کنید)</span></label>
+        <input type="tel" id="phone-input" placeholder="09121234567" inputmode="numeric" autocomplete="tel">
+      </div>
+      <button type="button" class="btn btn-primary" id="lookup-btn">نمایش رزروها</button>
+    </div>
+    <div id="lookup-msg"></div>
+  </div>
+
+  <div id="results"></div>
+
+</div>
+
+<footer>
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <img src="../assets/logo-circle.png" alt="NIAK Padel Club">
+      <div>
+        <b>NIAK PADEL CLUB</b>
+        <p>۲ زمین استاندارد، کافه</p>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <p>هر روز هفته، ساعت ۷ صبح تا ۲ بامداد</p>
+      <a class="social-link" href="https://instagram.com/niak.padel.club" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+        <span>niak.padel.club@</span>
+      </a>
+    </div>
+  </div>
+<a class="footer-location-link" href="https://www.google.com/maps/search/?api=1&amp;query=36.561982%2C52.0246139" target="_blank" rel="noopener">📍 آدرس زمین پدل</a>
+</footer>
+
+<script src="../assets/config.js"></script>
+<script src="../assets/jalaali.js"></script>
+<script src="../assets/transitions.js"></script>
+<script>
+(function(){
+  const API = (window.NIAK_API_BASE || '').replace(/\/+$/, '');
+  const COURTS = ['زمین ۱', 'زمین ۲'];
+  const PERSIAN_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+
+  const phoneInput = document.getElementById('phone-input');
+  const lookupBtn = document.getElementById('lookup-btn');
+  const lookupMsg = document.getElementById('lookup-msg');
+  const results = document.getElementById('results');
+
+  function persianDigits(n){
+    return String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+  }
+  function jalaliLabel(isoDate){
+    const [gy,gm,gd] = isoDate.split('-').map(Number);
+    const j = Jalaali.toJalali(gy, gm, gd);
+    return persianDigits(j.jd) + ' ' + PERSIAN_MONTHS[j.jm-1] + ' ' + persianDigits(j.jy);
+  }
+  function hourLabel(h){
+    // 24 و 25 یعنی ۰۰:۰۰ و ۰۱:۰۰ بامدادِ روز بعد
+    return h >= 24 ? '۰' + persianDigits(h - 24) + ':۰۰'
+                   : persianDigits(h) + ':۰۰';
+  }
+
+  // هر مقداری که از سرور می‌آید قبل از رفتن داخل innerHTML اسکیپ می‌شود، تا
+  // اگر روزی اعتبارسنجی نام سمت سرور شل‌تر شد، تبدیل به XSS نشود.
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => (
+      {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+    ));
+  }
+
+  function renderBookings(list){
+    if(!list.length){
+      results.innerHTML = '<div class="bk-empty">هیچ رزروی برای این شماره پیدا نشد.</div>';
+      return;
+    }
+    results.innerHTML = '<div class="bk-list">' + list.map(b => {
+      const end = b.start + b.duration;
+      const cardCls = b.past ? 'bk-card past' : 'bk-card';
+      const badge = b.past
+        ? '<span class="bk-badge past">گذشته</span>'
+        : '<span class="bk-badge">پیش رو</span>';
+      const cancelBtn = b.past
+        ? ''
+        : `<button type="button" class="bk-cancel" data-code="${esc(b.code)}">لغو رزرو</button>`;
+      return `<div class="${cardCls}">
+        <div class="bk-main">
+          <div class="bk-date">${jalaliLabel(b.date)} — ${COURTS[b.court]}</div>
+          <div class="bk-meta">${hourLabel(b.start)} تا ${hourLabel(end)} · به نام ${esc(b.name)}</div>
+          <span class="bk-code">${esc(b.code)}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          ${badge}
+          ${cancelBtn}
+        </div>
+      </div>`;
+    }).join('') + '</div>';
+  }
+
+  async function doLookup(){
+    const phone = phoneInput.value.trim();
+    lookupMsg.innerHTML = '';
+    if(phone.replace(/\D/g,'').length < 7){
+      lookupMsg.innerHTML = '<div class="lookup-msg err">شماره تلفن رو کامل وارد کن.</div>';
+      return;
+    }
+    lookupBtn.disabled = true;
+    const prevLabel = lookupBtn.textContent;
+    lookupBtn.textContent = 'در حال جست‌وجو…';
+    try{
+      const res = await fetch(`${API}/api/mybookings?phone=${encodeURIComponent(phone)}`);
+      if(res.status === 429){
+        lookupMsg.innerHTML = '<div class="lookup-msg err">درخواست زیاد بود، چند دقیقه دیگه دوباره امتحان کن.</div>';
+        results.innerHTML = '';
+        return;
+      }
+      if(!res.ok){
+        lookupMsg.innerHTML = '<div class="lookup-msg err">شماره تلفن معتبر نیست.</div>';
+        results.innerHTML = '';
+        return;
+      }
+      const list = await res.json();
+      renderBookings(list);
+    }catch(e){
+      lookupMsg.innerHTML = '<div class="lookup-msg err">ارتباط با سرور برقرار نشد، دوباره تلاش کن.</div>';
+      results.innerHTML = '';
+    }finally{
+      lookupBtn.disabled = false;
+      lookupBtn.textContent = prevLabel;
+    }
+  }
+
+  lookupBtn.addEventListener('click', doLookup);
+  phoneInput.addEventListener('keydown', e => { if(e.key === 'Enter') doLookup(); });
+
+  // ---- پنجره‌ی تأیید/پیام (جای confirm و alert مرورگر) ----
+  const modal = document.getElementById('modal');
+  const modalCard = document.getElementById('modal-card');
+  const modalIcon = document.getElementById('modal-icon');
+  const modalTitle = document.getElementById('modal-title');
+  const modalText = document.getElementById('modal-text');
+  const modalBooking = document.getElementById('modal-booking');
+  const modalTerms = document.getElementById('modal-terms');
+  const modalActions = document.getElementById('modal-actions');
+  let modalResolve = null;
+
+  function closeModal(value){
+    modal.classList.remove('open');
+    setTimeout(() => { modal.hidden = true; }, 220);
+    if(modalResolve){ const r = modalResolve; modalResolve = null; r(value); }
+  }
+
+  function openModal(opts){
+    modalCard.classList.toggle('is-ok', opts.tone === 'ok');
+    modalIcon.textContent = opts.icon || '!';
+    modalTitle.textContent = opts.title || '';
+    modalText.innerHTML = opts.text || '';
+    modalBooking.innerHTML = opts.booking || '';
+    modalBooking.hidden = !opts.booking;
+    modalTerms.innerHTML = opts.terms || '';
+    modalTerms.hidden = !opts.terms;
+    modalActions.innerHTML = (opts.buttons || []).map((b, i) =>
+      `<button type="button" class="${b.cls}" data-idx="${i}">${b.label}</button>`
+    ).join('');
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add('open'));
+    const first = modalActions.querySelector('button');
+    if(first) first.focus();
+    return new Promise(resolve => {
+      modalResolve = resolve;
+      modalActions.querySelectorAll('button').forEach(b => {
+        b.addEventListener('click', () => {
+          const spec = opts.buttons[Number(b.dataset.idx)];
+          if(spec.busyLabel){                       // دکمه‌ی اصلی: حالت «در حال انجام»
+            modalActions.querySelectorAll('button').forEach(x => x.disabled = true);
+            b.textContent = spec.busyLabel;
+          }
+          if(modalResolve){ const r = modalResolve; modalResolve = null; r(spec.value); }
+          if(spec.value !== 'confirm') closeModal(spec.value);
+        });
+      });
+    });
+  }
+
+  modal.addEventListener('click', e => {
+    // کلیک بیرون کارت فقط وقتی می‌بندد که عملیاتی در جریان نباشد
+    if(e.target === modal && !modalActions.querySelector('button:disabled')) closeModal(null);
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && !modal.hidden && !modalActions.querySelector('button:disabled')) closeModal(null);
+  });
+
+  const REFUND_NOTE = 'پس از لغو، همکاران باشگاه با همین شماره تماس می‌گیرند و ۹۲ درصد مبلغ پرداختی بازگردانده می‌شود.';
+
+  results.addEventListener('click', async e => {
+    const btn = e.target.closest('.bk-cancel');
+    if(!btn) return;
+    const card = btn.closest('.bk-card');
+    const bookingHtml =
+      `<div><b>${card.querySelector('.bk-date').textContent}</b></div>` +
+      `<div>${card.querySelector('.bk-meta').textContent}</div>` +
+      `<div class="modal-code">${card.querySelector('.bk-code').textContent}</div>`;
+    const answer = await openModal({
+      icon: '✕',
+      title: 'این رزرو لغو شود؟',
+      text: 'این کار قابل بازگشت نیست و ساعت انتخابی فوراً برای بقیه آزاد می‌شود.',
+      booking: bookingHtml,
+      terms: REFUND_NOTE,
+      buttons: [
+        { label: 'بله، لغو کن', cls: 'modal-danger', value: 'confirm', busyLabel: 'در حال لغو…' },
+        { label: 'انصراف', cls: 'modal-ghost', value: null },
+      ],
+    });
+    if(answer !== 'confirm') return;
+    const phone = phoneInput.value.trim();
+    btn.disabled = true;
+    btn.textContent = 'در حال لغو…';
+    try{
+      const res = await fetch(
+        `${API}/api/mybookings/${encodeURIComponent(btn.dataset.code)}?phone=${encodeURIComponent(phone)}`,
+        { method: 'DELETE' }
+      );
+      if(res.status === 429){
+        btn.disabled = false; btn.textContent = 'لغو رزرو';
+        await openModal({
+          icon: '⏳', title: 'کمی صبر کن',
+          text: 'درخواست‌ها زیاد بود. چند دقیقه دیگر دوباره امتحان کن.',
+          buttons: [{ label: 'باشه', cls: 'modal-single', value: null }],
+        });
+        return;
+      }
+      if(!res.ok){
+        btn.disabled = false; btn.textContent = 'لغو رزرو';
+        await openModal({
+          icon: '✕', title: 'رزرو لغو نشد',
+          text: 'این رزرو پیدا نشد یا قبلاً لغو شده. لیست را دوباره بگیر و بررسی کن.',
+          buttons: [{ label: 'باشه', cls: 'modal-single', value: null }],
+        });
+        return;
+      }
+      await doLookup();
+      await openModal({
+        tone: 'ok', icon: '✓', title: 'رزرو لغو شد',
+        text: 'این ساعت از تقویم باشگاه حذف شد و مدیریت هم بی‌درنگ باخبر شد.',
+        booking: bookingHtml,
+        terms: REFUND_NOTE,
+        buttons: [{ label: 'باشه', cls: 'modal-single', value: null }],
+      });
+    }catch(e){
+      btn.disabled = false; btn.textContent = 'لغو رزرو';
+      await openModal({
+        icon: '⚠', title: 'ارتباط برقرار نشد',
+        text: 'رزرو لغو نشد چون ارتباط با سرور قطع بود. اینترنت را بررسی کن و دوباره تلاش کن.',
+        buttons: [{ label: 'باشه', cls: 'modal-single', value: null }],
+      });
+    }
+  });
+})();
+
+  // اعداد فارسی/عربی را به انگلیسی تبدیل می‌کند تا شماره درست ذخیره و جست‌وجو شود
+  (function(){
+    const inp = document.getElementById('phone-input');
+    if(!inp) return;
+    inp.addEventListener('input', () => {
+      const fixed = inp.value.replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+                             .replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+      if(fixed !== inp.value){ const pos = inp.selectionStart; inp.value = fixed; try{ inp.setSelectionRange(pos, pos); }catch(e){} }
+    });
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منوی کافه — NIAK Padel Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .page-hero{
+    background:var(--court-green);
+    color:var(--line-white);
+    padding:40px 0 54px;
+    position:relative;
+    overflow:hidden;
+  }
+  .page-hero::after{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(201,162,74,.16), transparent 55%),
+      radial-gradient(circle at 10% 90%, rgba(201,162,74,.1), transparent 50%);
+    pointer-events:none;
+  }
+  .page-hero .wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;z-index:1;}
+  .page-hero img.menu-art{width:180px;height:auto;flex:none;filter:drop-shadow(0 14px 20px rgba(0,0,0,.3));}
+  .page-hero h1{font-size:clamp(24px,4vw,34px);font-weight:800;margin:0 0 8px;}
+  .page-hero p{margin:0;color:#e7e2d3;font-size:15.5px;max-width:44ch;}
+
+  .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+  .menu-cat{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:18px 18px 18px 6px;
+    box-shadow:var(--shadow-soft);
+    padding:22px 24px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .menu-cat:hover{transform:translateY(-4px);box-shadow:var(--shadow-lift);}
+  .menu-cat h3{
+    display:flex;align-items:center;gap:9px;
+    font-size:16.5px;font-weight:800;color:var(--num);
+    margin:0 0 16px;padding-bottom:12px;
+    border-bottom:2px dashed var(--num);
+  }
+  .menu-cat h3 .cat-icon{font-size:19px;}
+  .menu-item{
+    display:flex;justify-content:space-between;gap:14px;
+    padding:11px 8px;margin:0 -8px;border-radius:9px;
+    border-bottom:1px dashed var(--input-border);font-size:15px;
+    transition:background .15s ease;
+  }
+  .menu-item:hover{background:var(--surface-2);}
+  .menu-item:last-child{border-bottom:none;}
+  .menu-item .desc{color:var(--muted);font-size:13px;margin-top:2px;}
+  .menu-item .price{font-weight:700;color:var(--num-price);white-space:nowrap;font-variant-numeric:tabular-nums;}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <img src="../assets/logo-circle.png" alt="NIAK Padel Club">
+      <span>NIAK PADEL CLUB</span>
+    </a>
+    <div class="site-nav">
+      <a href="../padel/index.html">رزرو زمین</a>
+      <a href="index.html" class="active">منوی کافه</a>
+      <a href="../mybookings/index.html">رزروهای من</a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="wrap">
+    <img class="menu-art" src="assets/menu.svg" alt="نوشیدنی و شیرینی کافه">
+    <div>
+      <h1>منوی کافه</h1>
+      <p>قبل یا بعد از بازی، یه چیزی سفارش بده — قهوه، دمنوش، میان‌وعده و شیرینی.</p>
+    </div>
+  </div>
+</div>
+
+<section id="menu">
+  <div class="wrap">
+    <div class="menu-grid">
+      <div class="menu-cat">
+        <h3><span class="cat-icon">☕</span>قهوه</h3>
+        <div class="menu-item"><div><div>اسپرسو</div></div><div class="price">۴۵٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>آمریکانو</div></div><div class="price">۵۰٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>کاپوچینو</div></div><div class="price">۶۵٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>لاته</div></div><div class="price">۶۵٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>آیس‌لاته</div><div class="desc">شیر سرد، دو شات اسپرسو</div></div><div class="price">۷۵٬۰۰۰</div></div>
+      </div>
+
+      <div class="menu-cat">
+        <h3><span class="cat-icon">🍵</span>دمنوش و نوشیدنی سرد</h3>
+        <div class="menu-item"><div><div>دمنوش سیب‌دارچین</div></div><div class="price">۴۰٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>چای ماسالا</div></div><div class="price">۴۵٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>لیموناد نعنا</div></div><div class="price">۵۵٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>اسموتی انرژی</div><div class="desc">موز، خرما، بادام</div></div><div class="price">۷۰٬۰۰۰</div></div>
+      </div>
+
+      <div class="menu-cat">
+        <h3><span class="cat-icon">🥪</span>میان‌وعده</h3>
+        <div class="menu-item"><div><div>ساندویچ مرغ گریل</div></div><div class="price">۹۵٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>رپ سبزیجات</div></div><div class="price">۸۵٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>سالاد سزار</div></div><div class="price">۹۰٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>پروتئین بار</div></div><div class="price">۳۵٬۰۰۰</div></div>
+      </div>
+
+      <div class="menu-cat">
+        <h3><span class="cat-icon">🍰</span>شیرینی</h3>
+        <div class="menu-item"><div><div>کیک شکلاتی</div></div><div class="price">۵۵٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>براونی</div></div><div class="price">۵۰٬۰۰۰</div></div>
+        <div class="menu-item"><div><div>کوکی بادام</div></div><div class="price">۴۰٬۰۰۰</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <img src="../assets/logo-circle.png" alt="NIAK Padel Club">
+      <div>
+        <b>NIAK PADEL CLUB</b>
+        <p>۲ زمین استاندارد، کافه</p>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <p>هر روز هفته، ساعت ۷ صبح تا ۲ بامداد</p>
+      <a class="social-link" href="https://instagram.com/niak.padel.club" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+        <span>niak.padel.club@</span>
+      </a>
+    </div>
+  </div>
+<a class="footer-location-link" href="https://www.google.com/maps/search/?api=1&amp;query=36.561982%2C52.0246139" target="_blank" rel="noopener">📍 آدرس زمین پدل</a>
+</footer>
+
+<script src="../assets/transitions.js"></script>
+</body>
+</html>

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رزرو زمین — NIAK Padel Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .page-hero{
+    background:var(--court-green);
+    color:var(--line-white);
+    padding:44px 0 60px;
+    display:flex;
+    align-items:center;
+    gap:24px;
+    flex-wrap:wrap;
+    position:relative;
+    overflow:hidden;
+  }
+  .page-hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(100deg, var(--court-green) 30%, rgba(23,59,52,.55) 65%, rgba(23,59,52,.15)),
+      url('assets/court-render.png') center 30%/cover no-repeat;
+    opacity:.55;
+  }
+  .page-hero .wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;z-index:1;}
+  .page-hero img.racket{width:150px;height:150px;flex:none;filter:drop-shadow(0 14px 20px rgba(0,0,0,.35));}
+  .page-hero video.clip{
+    width:120px;height:180px;
+    object-fit:cover;
+    border-radius:16px;
+    flex:none;
+    box-shadow:0 14px 30px rgba(0,0,0,.4), 0 0 0 3px rgba(244,240,230,.2);
+    margin-inline-start:auto;
+  }
+  .page-hero h1{font-size:clamp(24px,4vw,34px);font-weight:800;margin:0 0 8px;}
+  .page-hero p{margin:0;color:#e7e2d3;font-size:15.5px;max-width:44ch;}
+
+  .booking-panel{
+    background:var(--surface);
+    border-radius:22px 22px 22px 6px;
+    padding:28px;
+    box-shadow:var(--shadow-soft);
+    border:1px solid var(--border);
+  }
+  .row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:22px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:13px;color:var(--muted);font-weight:600;}
+  input[type=text], input[type=tel]{
+    font-family:inherit;
+    border:1.5px solid var(--input-border);
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:15px;
+    background:var(--surface-2);
+    color:var(--ink);
+  }
+  input:focus{outline:2px solid var(--court-green-light);outline-offset:1px;}
+
+  /* ---- Custom Jalali date picker ---- */
+  .date-field{position:relative;}
+  .date-picker-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:inherit;
+    border:1.5px solid var(--input-border);
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:15px;
+    background:var(--surface-2);
+    color:var(--ink);
+    cursor:pointer;
+    min-width:190px;
+    box-shadow:0 3px 0 var(--input-border), 0 6px 12px rgba(0,0,0,.07);
+    transform:translateY(0);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .15s ease;
+  }
+  .date-picker-btn:hover{border-color:var(--court-green-light);}
+  .date-picker-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--input-border), 0 3px 6px rgba(0,0,0,.06);}
+  .date-picker-btn svg{width:18px;height:18px;color:var(--num);flex:none;}
+  .date-popover{
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    z-index:20;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:var(--shadow-lift);
+    padding:16px;
+    width:280px;
+  }
+  .cal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+    font-weight:700;
+    font-size:15px;
+  }
+  .cal-nav{
+    background:var(--sand);
+    border:none;
+    width:30px;height:30px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:15px;
+    font-family:inherit;
+    color:var(--num);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 0 rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.08);
+    transform:translateY(0);
+    transition:transform .1s ease, box-shadow .1s ease, background .15s ease;
+  }
+  .cal-nav:hover{background:var(--gold);color:#fff;}
+  .cal-nav:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,.12);}
+  .cal-weekdays{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:4px;
+  }
+  .cal-day{
+    border:none;
+    background:transparent;
+    border-radius:8px;
+    padding:8px 0;
+    font-family:inherit;
+    font-size:13.5px;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .cal-day:hover{background:var(--sand);}
+  .cal-day.today{box-shadow:inset 0 0 0 1.5px var(--num);font-weight:700;}
+  .cal-day.selected{background:var(--clay);color:#fff;}
+  .cal-day.empty{visibility:hidden;cursor:default;}
+  .cal-day.disabled{opacity:.3;cursor:not-allowed;color:var(--muted);}
+  .cal-day.disabled:hover{background:none;}
+  #cal-prev:disabled,#cal-next:disabled{opacity:.3;cursor:not-allowed;}
+
+  .court-cards{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+  .court-card{
+    position:relative;
+    width:180px;
+    height:120px;
+    border-radius:14px;
+    overflow:hidden;
+    cursor:pointer;
+    border:3px solid transparent;
+    flex:none;
+    box-shadow:0 8px 18px rgba(23,59,52,.12);
+  }
+  .court-card img{
+    width:100%;height:100%;object-fit:cover;
+    display:block;
+    filter:brightness(.75);
+  }
+  .court-card span{
+    position:absolute;
+    inset:auto 0 0 0;
+    padding:10px;
+    color:#fff;
+    font-weight:700;
+    font-size:15px;
+    background:linear-gradient(0deg, rgba(0,0,0,.6), transparent);
+  }
+  .court-card.active{border-color:var(--gold);box-shadow:0 10px 22px rgba(201,162,74,.35);}
+  .court-card.active img{filter:brightness(.95);}
+
+  .slots-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(78px,1fr));
+    gap:8px;
+    margin-bottom:22px;
+  }
+  .slot{
+    border:1.5px solid var(--input-border);
+    background:var(--surface-2);
+    border-radius:10px;
+    padding:10px 4px;
+    text-align:center;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+    box-shadow:0 3px 0 var(--input-border), 0 6px 10px rgba(0,0,0,.05);
+    transform:translateY(0);
+    transition:transform .1s ease, box-shadow .1s ease, background .15s ease;
+  }
+  .slot:active:not(.booked):not(.disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--input-border);}
+  .slot.selected{background:var(--clay);border-color:var(--clay);color:#fff;box-shadow:0 3px 0 var(--clay-dark), 0 8px 16px rgba(217,84,47,.32);}
+  .slot.booked{background:var(--booked);border-color:var(--booked);color:var(--booked-ink);cursor:not-allowed;text-decoration:line-through;box-shadow:none;}
+
+  .duration-toggle{display:flex;gap:8px;}
+  .dur-btn{
+    padding:10px 16px;
+    border-radius:10px;
+    border:1.5px solid var(--input-border);
+    background:var(--surface-2);
+    font-family:inherit;
+    font-weight:600;
+    cursor:pointer;
+    font-size:14.5px;
+    box-shadow:0 3px 0 var(--input-border), 0 6px 10px rgba(0,0,0,.05);
+    transform:translateY(0);
+    transition:transform .1s ease, box-shadow .1s ease, background .15s ease;
+  }
+  .dur-btn:active:not(.disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--input-border);}
+  .dur-btn.active{background:var(--court-green);border-color:var(--court-green);color:#fff;box-shadow:0 3px 0 #0a201c, 0 8px 16px rgba(23,59,52,.35);}
+  .dur-btn.disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+
+  .summary{
+    background:var(--sand);
+    border-radius:12px;
+    padding:16px 18px;
+    font-size:14.5px;
+    margin-bottom:20px;
+    color:var(--ink);
+  }
+  .summary b{color:var(--num);}
+
+  .confirm-msg{
+    margin-top:14px;
+    font-size:14.5px;
+    font-weight:600;
+    padding:12px 16px;
+    border-radius:10px;
+  }
+  .confirm-msg.ok{background:var(--ok-bg);color:var(--ok-ink);}
+  .confirm-msg.err{background:var(--err-bg);color:var(--err-ink);}
+  .slots-grid.is-loading{opacity:.45;pointer-events:none;}
+  .api-warn{
+    margin-bottom:18px;padding:11px 15px;border-radius:10px;
+    background:var(--err-bg);color:var(--err-ink);
+    font-size:14px;font-weight:600;line-height:1.6;
+  }
+  .booking-code{
+    display:block;margin-top:4px;font-weight:800;
+    font-variant-numeric:tabular-nums;letter-spacing:.04em;direction:ltr;
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <img src="../assets/logo-circle.png" alt="NIAK Padel Club">
+      <span>NIAK PADEL CLUB</span>
+    </a>
+    <div class="site-nav">
+      <a href="index.html" class="active">رزرو زمین</a>
+      <a href="../menu/index.html">منوی کافه</a>
+      <a href="../mybookings/index.html">رزروهای من</a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="wrap">
+    <img class="racket" src="assets/racket.svg" alt="راکت پدل">
+    <div>
+      <h1>رزرو زمین پدل</h1>
+      <p>تاریخ، زمین و ساعت شروع رو انتخاب کن، بعد مدت‌زمان بازی رو مشخص کن — از ۷ صبح تا ۲ بامداد، به‌صورت ۱، ۲ یا ۳ ساعته.</p>
+    </div>
+    <video class="clip" src="assets/court-clip.mp4" poster="assets/clip-poster.jpg" autoplay muted loop playsinline></video>
+  </div>
+</div>
+
+<section id="booking">
+  <div class="wrap">
+    <div class="booking-panel">
+      <div class="api-warn" id="api-warn" hidden></div>
+      <div class="row">
+        <div class="field date-field">
+          <label>تاریخ</label>
+          <button type="button" class="date-picker-btn" id="date-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+            <span id="date-btn-label">امروز</span>
+          </button>
+          <div class="date-popover" id="date-popover" hidden>
+            <div class="cal-header">
+              <button type="button" class="cal-nav" id="cal-prev">›</button>
+              <span id="cal-month-label"></span>
+              <button type="button" class="cal-nav" id="cal-next">‹</button>
+            </div>
+            <div class="cal-weekdays">
+              <span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span>ج</span>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label>انتخاب زمین</label>
+      </div>
+      <div class="court-cards" id="court-cards"></div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label>ساعت شروع <span class="field-hint">(۰۰:۰۰ و ۰۱:۰۰ یعنی بامدادِ فردای همان تاریخ)</span></label>
+      </div>
+      <div class="slots-grid" id="slots-grid"></div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label>مدت زمان</label>
+      </div>
+      <div class="duration-toggle" id="duration-toggle"></div>
+
+      <div class="summary" id="summary" style="margin-top:22px; display:none;"></div>
+
+      <div class="row" style="margin-top:6px;">
+        <div class="field" style="flex:1; min-width:160px;">
+          <label for="name-input">نام</label>
+          <input type="text" id="name-input" placeholder="نام و نام خانوادگی">
+        </div>
+        <div class="field" style="flex:1; min-width:160px;">
+          <label for="phone-input">شماره تماس <span class="field-hint">(با اعداد انگلیسی تایپ کنید)</span></label>
+          <input type="tel" id="phone-input" placeholder="09xxxxxxxxx" inputmode="numeric" autocomplete="tel">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="confirm-btn">ثبت رزرو</button>
+      <div id="confirm-msg"></div>
+
+      <div class="location-address" style="margin-top:22px; text-align:center;">
+        📍 <b>آدرس زمین پدل</b><br>
+        برای دیدن موقعیت دقیق باشگاه روی نقشه،
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=36.561982%2C52.0246139" target="_blank" rel="noopener">اینجا روی Google Maps باز کن</a>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <img src="../assets/logo-circle.png" alt="NIAK Padel Club">
+      <div>
+        <b>NIAK PADEL CLUB</b>
+        <p>۲ زمین استاندارد، کافه</p>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <p>هر روز هفته، ساعت ۷ صبح تا ۲ بامداد</p>
+      <a class="social-link" href="https://instagram.com/niak.padel.club" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+        <span>niak.padel.club@</span>
+      </a>
+    </div>
+  </div>
+<a class="footer-location-link" href="https://www.google.com/maps/search/?api=1&amp;query=36.561982%2C52.0246139" target="_blank" rel="noopener">📍 آدرس زمین پدل</a>
+</footer>
+
+<script src="../assets/config.js"></script>
+<script src="../assets/jalaali.js"></script>
+<script>
+(function(){
+  const COURTS = ['زمین ۱', 'زمین ۲'];
+  const START_HOUR = 7;
+  const END_HOUR = 26;   // ۰۲:۰۰ بامداد روز بعد
+  const DURATIONS = [1,2,3];
+  const BOOKING_WINDOW_DAYS = 90; // must match api_server.py's BOOKING_WINDOW_DAYS
+
+  let selectedCourt = 0;
+  let selectedHour = null;
+  let selectedDuration = 1;
+
+  const dateBtn = document.getElementById('date-btn');
+  const dateBtnLabel = document.getElementById('date-btn-label');
+  const datePopover = document.getElementById('date-popover');
+  const calGrid = document.getElementById('cal-grid');
+  const calMonthLabel = document.getElementById('cal-month-label');
+  const calPrev = document.getElementById('cal-prev');
+  const calNext = document.getElementById('cal-next');
+  const courtCards = document.getElementById('court-cards');
+  const slotsGrid = document.getElementById('slots-grid');
+  const durationToggle = document.getElementById('duration-toggle');
+  const summaryEl = document.getElementById('summary');
+  const confirmBtn = document.getElementById('confirm-btn');
+  const confirmMsg = document.getElementById('confirm-msg');
+  const nameInput = document.getElementById('name-input');
+  const phoneInput = document.getElementById('phone-input');
+
+  const PERSIAN_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+
+  // ساعت و تاریخ همیشه به وقت باشگاه (تهران) حساب می‌شود، نه ساعت دستگاه کاربر،
+  // تا کسی که موبایلش روی منطقه‌زمانی دیگری است ساعت‌های درست را ببیند.
+  const CLUB_TZ = 'Asia/Tehran';
+  function clubParts(){
+    const p = new Intl.DateTimeFormat('en-US', {
+      timeZone: CLUB_TZ, year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', hour12: false
+    }).formatToParts(new Date()).reduce((o, x) => (o[x.type] = x.value, o), {});
+    return { y: +p.year, m: +p.month, d: +p.day, hour: (+p.hour) % 24 };
+  }
+  function clubToday(){ const c = clubParts(); return new Date(c.y, c.m - 1, c.d); }
+
+  const today = clubToday();
+  let selectedDate = today; // JS Date object, the source of truth
+  let viewJy, viewJm; // currently displayed month in the popover
+
+  function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  const minBookableDate = startOfDay(today);
+  const maxBookableDate = startOfDay(today);
+  maxBookableDate.setDate(maxBookableDate.getDate() + BOOKING_WINDOW_DAYS);
+
+  function persianDigits(n){
+    const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    return String(n).replace(/[0-9]/g, d => fa[d]);
+  }
+  function hourLabel(h){
+    // 24 و 25 یعنی ۰۰:۰۰ و ۰۱:۰۰ بامدادِ روز بعد
+    return h >= 24 ? '۰' + persianDigits(h - 24) + ':۰۰'
+                   : persianDigits(h) + ':۰۰';
+  }
+
+  function dateToISO(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function isSameDate(a,b){
+    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  }
+  function persianWeekday(gDate){
+    return (gDate.getDay() + 1) % 7; // 0=Saturday ... 6=Friday
+  }
+
+  function updateDateLabel(){
+    const j = Jalaali.toJalali(selectedDate.getFullYear(), selectedDate.getMonth()+1, selectedDate.getDate());
+    dateBtnLabel.textContent = persianDigits(j.jd) + ' ' + PERSIAN_MONTHS[j.jm-1] + ' ' + persianDigits(j.jy);
+  }
+
+  function openCalendarAt(gDate){
+    const j = Jalaali.toJalali(gDate.getFullYear(), gDate.getMonth()+1, gDate.getDate());
+    viewJy = j.jy;
+    viewJm = j.jm;
+    renderCalendar();
+  }
+
+  function renderCalendar(){
+    calMonthLabel.textContent = PERSIAN_MONTHS[viewJm-1] + ' ' + persianDigits(viewJy);
+    const monthLen = Jalaali.monthLength(viewJy, viewJm);
+    const firstGreg = Jalaali.toGregorian(viewJy, viewJm, 1);
+    const firstDate = new Date(firstGreg.gy, firstGreg.gm-1, firstGreg.gd);
+    const leadEmpty = persianWeekday(firstDate);
+
+    let html = '';
+    for(let i=0;i<leadEmpty;i++) html += '<span class="cal-day empty"></span>';
+    for(let d=1; d<=monthLen; d++){
+      const g = Jalaali.toGregorian(viewJy, viewJm, d);
+      const cellDate = new Date(g.gy, g.gm-1, g.gd);
+      const outOfRange = cellDate < minBookableDate || cellDate > maxBookableDate;
+      let cls = 'cal-day';
+      if(isSameDate(cellDate, today)) cls += ' today';
+      if(isSameDate(cellDate, selectedDate)) cls += ' selected';
+      if(outOfRange) cls += ' disabled';
+      html += `<button type="button" class="${cls}" data-g="${dateToISO(cellDate)}" ${outOfRange?'disabled':''}>${persianDigits(d)}</button>`;
+    }
+    calGrid.innerHTML = html;
+    if(window.initRipples) window.initRipples(calGrid);
+
+    // فلش ماه قبل/بعد رو هم غیرفعال کن اگر کل اون ماه خارج از بازه‌ی قابل‌رزروئه
+    const minJ = Jalaali.toJalali(minBookableDate.getFullYear(), minBookableDate.getMonth()+1, minBookableDate.getDate());
+    const maxJ = Jalaali.toJalali(maxBookableDate.getFullYear(), maxBookableDate.getMonth()+1, maxBookableDate.getDate());
+    calPrev.disabled = (viewJy*12+viewJm) <= (minJ.jy*12+minJ.jm);
+    calNext.disabled = (viewJy*12+viewJm) >= (maxJ.jy*12+maxJ.jm);
+  }
+
+  calGrid.addEventListener('click', e => {
+    const btn = e.target.closest('.cal-day');
+    if(!btn || btn.classList.contains('empty') || btn.disabled) return;
+    const [gy,gm,gd] = btn.dataset.g.split('-').map(Number);
+    selectedDate = new Date(gy, gm-1, gd);
+    updateDateLabel();
+    datePopover.hidden = true;
+    selectedHour = null;
+    confirmMsg.innerHTML = '';
+    render();
+  });
+
+  calPrev.addEventListener('click', () => {
+    if(calPrev.disabled) return;
+    viewJm -= 1;
+    if(viewJm < 1){ viewJm = 12; viewJy -= 1; }
+    renderCalendar();
+  });
+  calNext.addEventListener('click', () => {
+    if(calNext.disabled) return;
+    viewJm += 1;
+    if(viewJm > 12){ viewJm = 1; viewJy += 1; }
+    renderCalendar();
+  });
+
+  dateBtn.addEventListener('click', () => {
+    const willOpen = datePopover.hidden;
+    datePopover.hidden = !willOpen;
+    if(willOpen) openCalendarAt(selectedDate);
+  });
+  document.addEventListener('click', e => {
+    if(!datePopover.hidden && !e.target.closest('.date-field')) datePopover.hidden = true;
+  });
+
+  updateDateLabel();
+
+  courtCards.innerHTML = COURTS.map((c,i) => `
+    <div class="court-card ${i===0?'active':''}" data-court="${i}">
+      <img src="assets/court-render.png" alt="${c}">
+      <span>${c}</span>
+    </div>
+  `).join('');
+
+  durationToggle.innerHTML = DURATIONS.map(d =>
+    `<button class="dur-btn ${d===1?'active':''}" data-dur="${d}">${persianDigits(d)} ساعته</button>`
+  ).join('');
+
+  // ---- Server-side booking store -------------------------------------------
+  // All reservations live on the server (SQLite), so every visitor sees the
+  // same availability and the same hour can never be sold twice.
+  // آدرس API از assets/config.js میاد — تنها جایی که برای هاست خودت لازمه عوض بشه.
+  const API = (window.NIAK_API_BASE || '').replace(/\/+$/, '');
+
+  let apiOnline = true;
+  function setApiState(online, msg){
+    apiOnline = online;
+    const box = document.getElementById('api-warn');
+    if(online){ box.hidden = true; box.textContent = ''; }
+    else { box.hidden = false; box.textContent = msg; }
+    confirmBtn.disabled = !online;
+    confirmBtn.style.opacity = online ? '' : '.5';
+  }
+
+  // hours occupied on the selected court, as a Set
+  async function fetchOccupied(dateStr, courtIndex){
+    const res = await fetch(`${API}/api/bookings?date=${encodeURIComponent(dateStr)}`, {cache:'no-store'});
+    if(!res.ok) throw new Error('bad response ' + res.status);
+    const data = await res.json();
+    return new Set(data.occupied[String(courtIndex)] || []);
+  }
+
+  async function render(){
+    const dateStr = dateToISO(selectedDate);
+    slotsGrid.classList.add('is-loading');
+    let occ = new Set();
+    try{
+      occ = await fetchOccupied(dateStr, selectedCourt);
+      setApiState(true);
+    }catch(e){
+      setApiState(false, 'اتصال به سرور رزرو برقرار نشد؛ وضعیت ساعت‌ها ممکنه به‌روز نباشه. لطفاً صفحه رو دوباره بارگذاری کن.');
+    }
+    slotsGrid.classList.remove('is-loading');
+
+    const hours = [];
+    for(let h=START_HOUR; h<END_HOUR; h++) hours.push(h);
+
+    // امروز، ساعت‌هایی که گذشته دیگه قابل انتخاب نیستن — این فقط برای نمایشه؛
+    // تصمیم واقعی و غیرقابل‌دورزدن همیشه سمت سرور گرفته می‌شه.
+    const isToday = isSameDate(selectedDate, clubToday());
+    const currentHour = clubParts().hour;
+
+    slotsGrid.innerHTML = hours.map(h => {
+      const isPast = isToday && h <= currentHour;
+      const isBooked = occ.has(h) || isPast;
+      const isSelected = selectedHour === h;
+      const cls = isPast ? 'slot past' : (isBooked ? 'slot booked' : (isSelected ? 'slot selected' : 'slot'));
+      return `<button class="${cls}" data-hour="${h}" ${isBooked?'disabled':''}>${hourLabel(h)}</button>`;
+    }).join('');
+
+    Array.from(durationToggle.children).forEach(btn => {
+      const d = Number(btn.dataset.dur);
+      let fits = selectedHour !== null && (selectedHour + d) <= END_HOUR;
+      if(fits){
+        for(let h=selectedHour; h<selectedHour+d; h++){ if(occ.has(h)){ fits=false; break; } }
+      }
+      btn.classList.toggle('disabled', !fits);
+      btn.classList.toggle('active', d===selectedDuration && fits);
+      btn.disabled = !fits;
+    });
+
+    updateSummary();
+    if(window.initRipples) window.initRipples(slotsGrid);
+  }
+
+  function updateSummary(){
+    if(selectedHour === null){ summaryEl.style.display='none'; return; }
+    const endHour = selectedHour + selectedDuration;
+    summaryEl.style.display = 'block';
+    summaryEl.innerHTML =
+      `<b>${COURTS[selectedCourt]}</b> — از ساعت <b>${hourLabel(selectedHour)}</b> تا ` +
+      `<b>${hourLabel(endHour)}</b> (${persianDigits(selectedDuration)} ساعته)`;
+  }
+
+  courtCards.addEventListener('click', e => {
+    const card = e.target.closest('.court-card');
+    if(!card) return;
+    selectedCourt = Number(card.dataset.court);
+    selectedHour = null;
+    Array.from(courtCards.children).forEach(c => c.classList.toggle('active', c===card));
+    render();
+  });
+
+  slotsGrid.addEventListener('click', e => {
+    const btn = e.target.closest('.slot');
+    if(!btn || btn.classList.contains('booked')) return;
+    selectedHour = Number(btn.dataset.hour);
+    render();
+  });
+
+  durationToggle.addEventListener('click', e => {
+    const btn = e.target.closest('.dur-btn');
+    if(!btn || btn.disabled) return;
+    selectedDuration = Number(btn.dataset.dur);
+    render();
+  });
+
+  confirmBtn.addEventListener('click', async () => {
+    confirmMsg.innerHTML = '';
+    if(selectedHour === null){
+      confirmMsg.innerHTML = '<div class="confirm-msg err">لطفاً یک ساعت شروع انتخاب کن.</div>';
+      return;
+    }
+    if(!nameInput.value.trim() || !phoneInput.value.trim()){
+      confirmMsg.innerHTML = '<div class="confirm-msg err">نام و شماره تماس رو وارد کن.</div>';
+      return;
+    }
+
+    const dateStr = dateToISO(selectedDate);
+    confirmBtn.disabled = true;
+    const prevLabel = confirmBtn.textContent;
+    confirmBtn.textContent = 'در حال ثبت…';
+
+    try{
+      const res = await fetch(`${API}/api/bookings`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          date: dateStr,
+          court: selectedCourt,
+          start: selectedHour,
+          duration: selectedDuration,
+          name: nameInput.value.trim(),
+          phone: phoneInput.value.trim()
+        })
+      });
+
+      if(res.status === 201){
+        const data = await res.json();
+        confirmMsg.innerHTML =
+          '<div class="confirm-msg ok">رزرو با موفقیت ثبت شد ✓' +
+          `<span class="booking-code">کد رزرو: ${data.code}</span></div>`;
+        selectedHour = null;
+        nameInput.value = '';
+        phoneInput.value = '';
+      }else if(res.status === 409){
+        // someone else grabbed this range first — server rejected it atomically
+        confirmMsg.innerHTML = '<div class="confirm-msg err">این بازه همین حالا توسط شخص دیگه‌ای رزرو شد. لطفاً ساعت دیگه‌ای انتخاب کن.</div>';
+        selectedHour = null;
+      }else if(res.status === 400){
+        // خطاهای منطقی سرور (تاریخ گذشته، ساعت گذشته، خارج از بازه‌ی رزرو و ...)
+        let detail = '';
+        try{ detail = (await res.json()).detail || ''; }catch(e){}
+        const known = {
+          'this hour has already passed today': 'این ساعت همین امروز گذشته. لطفاً یه ساعت دیگه انتخاب کن.',
+          'date is in the past': 'این تاریخ گذشته و قابل رزرو نیست.',
+          'date is too far ahead': 'این تاریخ خیلی جلوتره و هنوز قابل رزرو نیست.',
+          'booking runs past closing time': 'این بازه از ساعت تعطیلی باشگاه رد می‌شه، مدت کوتاه‌تری انتخاب کن.'
+        };
+        confirmMsg.innerHTML = `<div class="confirm-msg err">${known[detail] || 'این رزرو قابل ثبت نیست، لطفاً دوباره بررسی کن.'}</div>`;
+        selectedHour = null;
+      }else{
+        confirmMsg.innerHTML = '<div class="confirm-msg err">اطلاعات رزرو معتبر نیست، دوباره بررسی کن.</div>';
+      }
+    }catch(e){
+      confirmMsg.innerHTML = '<div class="confirm-msg err">ارتباط با سرور قطع شد، دوباره تلاش کن.</div>';
+    }finally{
+      confirmBtn.textContent = prevLabel;
+      confirmBtn.disabled = false;
+      await render();
+    }
+  });
+
+  // keep availability fresh while the page stays open
+  setInterval(() => { if(!document.hidden) render(); }, 30000);
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) render(); });
+
+  render();
+})();
+</script>
+<script src="../assets/transitions.js">
+  // اعداد فارسی/عربی را به انگلیسی تبدیل می‌کند تا شماره درست ذخیره و جست‌وجو شود
+  (function(){
+    const inp = document.getElementById('phone-input');
+    if(!inp) return;
+    inp.addEventListener('input', () => {
+      const fixed = inp.value.replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+                             .replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+      if(fixed !== inp.value){ const pos = inp.selectionStart; inp.value = fixed; try{ inp.setSelectionRange(pos, pos); }catch(e){} }
+    });
+  })();
+</script>
+
+</body>
+</html>

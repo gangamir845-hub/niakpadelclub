@@ -1,0 +1,46 @@
+# نمونه کانفیگ Nginx برای هاست کردن NIAK Padel Club روی سرور خودت.
+# یه دامنه هم فایل‌های استاتیک سایت رو سرو می‌کنه هم مسیر /api/ رو به
+# بک‌اند پایتون (روی پورت 8000، فقط لوکال) پروکسی می‌کنه — پس نیازی به
+# CORS یا پورت جدا نیست و assets/config.js می‌تونه خالی بمونه.
+#
+# کپی کن به: /etc/nginx/sites-available/niak-padel
+# بعد: ln -s /etc/nginx/sites-available/niak-padel /etc/nginx/sites-enabled/
+# و دامنه/مسیر ریشه رو با مقدار واقعی خودت جایگزین کن.
+
+server {
+    listen 80;
+    server_name niakpadel.ir www.niakpadel.ir;   # <-- دامنه‌ی خودت
+
+    root /var/www/niak-padel-club/site;          # <-- فقط پوشه‌ی site (فایل‌های HTML/CSS/JS)
+                                                 #     هیچ‌وقت ریشه‌ی پروژه را نگذار، وگرنه
+                                                 #     .env و data.db قابل دانلود می‌شوند.
+
+    # لایه‌ی دوم محافظت: حتی اگر ریشه اشتباه تنظیم شد، این فایل‌ها سرو نمی‌شوند.
+    location ~ /\.(env|git) { deny all; }
+    location ~* \.(db|db-wal|db-shm|sqlite3?)$ { deny all; }
+    index index.html;
+
+    # فایل‌های استاتیک سایت
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # درخواست‌های API مستقیم به بک‌اند پایتون (uvicorn روی 127.0.0.1:8000)
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # صفحه‌ی مدیریت رو از دید موتورهای جست‌وجو مخفی نگه دار (فایل robots سطح
+    # سایت هم همینو می‌گه، این فقط یه لایه‌ی اضافه‌ست)
+    location = /admin/index.html {
+        add_header X-Robots-Tag "noindex, nofollow" always;
+        try_files $uri =404;
+    }
+}
+
+# بعد از گرفتن گواهی SSL (توصیه‌شده: certbot --nginx) این بلاک به‌صورت
+# خودکار برای ریدایرکت HTTP -> HTTPS و بلاک 443 اضافه/تنظیم می‌شه.

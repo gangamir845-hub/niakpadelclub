@@ -1,0 +1,22 @@
+<svg viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg">
+  <!-- shadow -->
+  <ellipse cx="220" cy="292" rx="150" ry="14" fill="#000" opacity="0.12"/>
+
+  <!-- steam -->
+  <g fill="none" stroke="#F4F0E6" stroke-width="6" stroke-linecap="round" opacity="0.85">
+    <path d="M185 40 C170 55 200 65 185 82 C172 96 198 108 188 122"/>
+    <path d="M225 30 C210 45 240 55 225 72 C212 86 238 98 228 112"/>
+  </g>
+
+  <!-- cup -->
+  <path d="M120 150 H270 L258 250 Q255 268 236 268 H154 Q135 268 132 250 Z" fill="none" stroke="#F4F0E6" stroke-width="12"/>
+  <!-- handle -->
+  <path d="M270 168 Q320 168 320 205 Q320 242 270 238" fill="none" stroke="#F4F0E6" stroke-width="12"/>
+  <!-- saucer -->
+  <ellipse cx="195" cy="270" rx="140" ry="18" fill="none" stroke="#F4F0E6" stroke-width="10"/>
+
+  <!-- croissant -->
+  <path d="M330 230 C300 190 320 140 365 140 C395 140 410 165 405 190 C440 175 460 200 450 225
+           C465 235 460 260 435 258 C415 285 375 285 355 262 C330 262 315 245 330 230 Z"
+        fill="none" stroke="#D9542F" stroke-width="9" stroke-linejoin="round"/>
+</svg>

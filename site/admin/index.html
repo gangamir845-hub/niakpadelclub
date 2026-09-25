@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لیست رزروها — NIAK Padel Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .page-hero{background:var(--court-green);color:var(--line-white);padding:34px 0 40px;}
+  .page-hero h1{font-size:clamp(22px,4vw,30px);font-weight:800;margin:0 0 6px;}
+  .page-hero p{margin:0;color:#e7e2d3;font-size:15px;}
+  .panel{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:22px 22px 22px 6px;padding:24px;box-shadow:var(--shadow-soft);
+  }
+  .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:13px;color:var(--muted);font-weight:600;}
+  .field input{
+    font-family:inherit;border:1.5px solid var(--input-border);border-radius:10px;
+    padding:10px 14px;font-size:15px;background:var(--surface-2);color:var(--ink);
+  }
+  table{width:100%;border-collapse:collapse;font-size:14.5px;}
+  th,td{padding:11px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;}
+  td.name{white-space:normal;min-width:110px;}
+  th{font-size:13px;color:var(--muted);font-weight:700;}
+  td{font-variant-numeric:tabular-nums;}
+  td.code{direction:ltr;text-align:left;font-weight:700;color:var(--num);}
+  td.phone{direction:ltr;text-align:left;}
+  .table-scroll{overflow-x:auto;}
+  .msg{padding:12px 16px;border-radius:10px;font-weight:600;font-size:14.5px;}
+  .msg.err{background:var(--err-bg);color:var(--err-ink);}
+  .msg.empty{background:var(--sand);color:var(--muted);}
+  .del{
+    background:none;border:1.5px solid var(--input-border);border-radius:8px;
+    padding:5px 11px;font-family:inherit;font-size:13px;cursor:pointer;color:var(--err-ink);
+    box-shadow:0 2px 0 var(--input-border), 0 4px 8px rgba(0,0,0,.06);
+    transform:translateY(0);
+    transition:transform .1s ease, box-shadow .1s ease, border-color .15s ease;
+  }
+  .del:hover{border-color:var(--clay);}
+  .del:active{transform:translateY(2px);box-shadow:0 1px 0 var(--input-border);}
+  .live{
+    display:flex;align-items:center;gap:8px;
+    font-size:13.5px;font-weight:600;color:var(--muted);
+    margin-inline-start:auto;padding-bottom:11px;
+  }
+  .live .dot{width:9px;height:9px;border-radius:50%;background:var(--booked);flex:none;}
+  .live.on .dot{background:#2fbf71;animation:livepulse 2s ease-in-out infinite;}
+  @keyframes livepulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .alert-bar{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:var(--ok-bg);color:var(--ok-ink);
+    border-radius:12px;padding:13px 17px;margin-bottom:18px;
+    font-weight:700;font-size:15px;
+  }
+  .alert-bar button{
+    background:var(--ok-ink);color:var(--surface);border:none;border-radius:8px;
+    padding:7px 14px;font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;
+  }
+  tr.fresh td{background:var(--ok-bg);}
+  .new-tag{
+    display:inline-block;margin-inline-start:8px;padding:1px 8px;border-radius:999px;
+    background:var(--ok-ink);color:var(--surface);font-size:11.5px;font-weight:700;
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <img src="../assets/logo-circle.png" alt="NIAK Padel Club">
+      <span>NIAK PADEL CLUB</span>
+    </a>
+    <div class="site-nav">
+      <a href="../padel/index.html">رزرو زمین</a>
+      <a href="../menu/index.html">منوی کافه</a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="wrap">
+    <h1>لیست رزروها</h1>
+    <p>پنل داخلی باشگاه — برای دیدن رزروها رمز مدیریت رو وارد کن.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="toolbar">
+        <div class="field">
+          <label for="token">رمز مدیریت</label>
+          <input type="password" id="token" placeholder="••••••••">
+        </div>
+        <div class="field">
+          <label for="date">تاریخ (اختیاری، میلادی)</label>
+          <input type="date" id="date">
+        </div>
+        <button class="btn btn-primary" id="load-btn">نمایش رزروها</button>
+        <span class="live" id="live"><span class="dot"></span><span id="live-text">منتظر ورود</span></span>
+      </div>
+      <div id="alert"></div>
+      <div id="out"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <img src="../assets/logo-circle.png" alt="NIAK Padel Club">
+      <div>
+        <b>NIAK PADEL CLUB</b>
+        <p>۲ زمین استاندارد، کافه</p>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <p>هر روز هفته، ساعت ۷ صبح تا ۲ بامداد</p>
+    </div>
+  </div>
+<a class="footer-location-link" href="https://www.google.com/maps/search/?api=1&amp;query=36.561982%2C52.0246139" target="_blank" rel="noopener">📍 آدرس زمین پدل</a>
+</footer>
+
+<script src="../assets/config.js"></script>
+<script src="../assets/jalaali.js"></script>
+<script>
+(function(){
+  // آدرس API از assets/config.js میاد — تنها جایی که برای هاست خودت لازمه عوض بشه.
+  const API = (window.NIAK_API_BASE || '').replace(/\/+$/, '');
+  const MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const tokenInput = document.getElementById('token');
+  const dateInput = document.getElementById('date');
+  const out = document.getElementById('out');
+  const alertBox = document.getElementById('alert');
+  const live = document.getElementById('live');
+  const liveText = document.getElementById('live-text');
+
+  let seenMaxId = 0;         // بالاترین شناسه‌ای که دیده‌ایم
+  let freshIds = new Set();  // رزروهایی که از زمان باز کردن پنل اضافه شدند
+  let pollTimer = null;
+  let audioCtx = null;
+
+  function fa(n){ return String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]); }
+  function hourLabel(h){ return h >= 24 ? '۰' + fa(h - 24) + ':۰۰' : fa(h) + ':۰۰'; }
+  function jalaliLabel(iso){
+    const [gy,gm,gd] = iso.split('-').map(Number);
+    const j = Jalaali.toJalali(gy,gm,gd);
+    return fa(j.jd) + ' ' + MONTHS[j.jm-1] + ' ' + fa(j.jy);
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // بوق کوتاه با WebAudio — بدون فایل صوتی
+  function beep(){
+    try{
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = audioCtx.currentTime;
+      [880, 1320].forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const at = t0 + i * 0.17;
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.linearRampToValueAtTime(0.15, at + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.15);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(at);
+        osc.stop(at + 0.17);
+      });
+    }catch(e){}
+  }
+
+  function desktopNotify(count){
+    try{
+      if(!('Notification' in window) || Notification.permission !== 'granted') return;
+      new Notification('رزرو جدید — NIAK Padel Club', {
+        body: count === 1 ? 'یک رزرو تازه ثبت شد' : fa(count) + ' رزرو تازه ثبت شد',
+        tag: 'niak-booking'
+      });
+    }catch(e){}
+  }
+
+  function showAlert(count){
+    alertBox.innerHTML =
+      '<div class="alert-bar"><span>رزرو جدید: ' + fa(count) + ' مورد</span>' +
+      '<button type="button" id="seen-btn">دیدم</button></div>';
+    document.getElementById('seen-btn').addEventListener('click', () => {
+      alertBox.innerHTML = '';
+      freshIds = new Set();
+      document.querySelectorAll('tr.fresh').forEach(tr => tr.classList.remove('fresh'));
+      document.querySelectorAll('.new-tag').forEach(el => el.remove());
+    });
+  }
+
+  // هر ۱۵ ثانیه از سرور می‌پرسد رزرو تازه‌ای آمده یا نه
+  async function poll(){
+    const token = tokenInput.value.trim();
+    if(!token) return;
+    try{
+      const res = await fetch(
+        API + '/api/admin/latest?since_id=' + seenMaxId,
+        {cache:'no-store', headers:{'X-Admin-Token': token}});
+      if(!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      live.classList.add('on');
+      liveText.textContent = 'متصل — پایش زنده';
+      if(data.new_count > 0){
+        beep();
+        desktopNotify(data.new_count);
+        showAlert(data.new_count);
+        await load({keepAlert:true});
+      }
+    }catch(e){
+      live.classList.remove('on');
+      liveText.textContent = 'ارتباط قطع است';
+    }
+  }
+
+  async function load(opts){
+    opts = opts || {};
+    const token = tokenInput.value.trim();
+    if(!token){ out.innerHTML = '<div class="msg err">رمز مدیریت رو وارد کن.</div>'; return; }
+    let url = `${API}/api/admin/bookings`;
+    if(dateInput.value) url += `?date=${encodeURIComponent(dateInput.value)}`;
+
+    out.innerHTML = '<div class="msg empty">در حال بارگذاری…</div>';
+    try{
+      const res = await fetch(url, {cache:'no-store', headers:{'X-Admin-Token': token}});
+      if(res.status === 401){ out.innerHTML = '<div class="msg err">رمز مدیریت درست نیست.</div>'; return; }
+      if(res.status === 503){ out.innerHTML = '<div class="msg err">پنل مدیریت روی سرور تنظیم نشده است (رمز مدیریت تعریف نشده).</div>'; return; }
+      if(!res.ok){ out.innerHTML = '<div class="msg err">خطا در دریافت اطلاعات.</div>'; return; }
+      const rows = await res.json();
+
+      // هر رزروی که شناسه‌اش بالاتر از آخرین دیده‌شده باشد «جدید» است
+      const previousMax = seenMaxId;
+      rows.forEach(r => { if(previousMax && r.id > previousMax) freshIds.add(r.id); });
+      seenMaxId = rows.reduce((m, r) => Math.max(m, r.id), seenMaxId);
+      if(!opts.keepAlert) alertBox.innerHTML = '';
+
+      if(!rows.length){ out.innerHTML = '<div class="msg empty">هیچ رزروی ثبت نشده.</div>'; return; }
+
+      out.innerHTML =
+        '<div class="table-scroll"><table><thead><tr>' +
+        '<th>تاریخ</th><th>زمین</th><th>ساعت</th><th>مدت</th><th>نام</th><th>شماره</th><th>کد</th><th></th>' +
+        '</tr></thead><tbody>' +
+        rows.map(r => `<tr data-id="${r.id}" class="${freshIds.has(r.id) ? 'fresh' : ''}">
+            <td>${jalaliLabel(r.date)}${freshIds.has(r.id) ? '<span class="new-tag">جدید</span>' : ''}</td>
+            <td>زمین ${fa(r.court+1)}</td>
+            <td>${hourLabel(r.start)} تا ${hourLabel(r.start + r.duration)}</td>
+            <td>${fa(r.duration)} ساعت</td>
+            <td class="name">${esc(r.name)}</td>
+            <td class="phone">${esc(r.phone)}</td>
+            <td class="code">${esc(r.code)}</td>
+            <td><button class="del" data-del="${r.id}">لغو</button></td>
+          </tr>`).join('') +
+        '</tbody></table></div>';
+    }catch(e){
+      out.innerHTML = '<div class="msg err">ارتباط با سرور برقرار نشد.</div>';
+    }
+  }
+
+  out.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-del]');
+    if(!btn) return;
+    if(!confirm('این رزرو لغو بشه؟ ساعتش آزاد می‌شه.')) return;
+    const token = tokenInput.value.trim();
+    try{
+      const res = await fetch(`${API}/api/admin/bookings/${btn.dataset.del}`,
+                  {method:'DELETE', headers:{'X-Admin-Token': token}});
+      if(res.status === 401){
+        alertBox.innerHTML = '<div class="msg err">رمز مدیریت درست نیست — رزرو حذف نشد.</div>';
+        return;
+      }
+      if(res.status === 404){
+        alertBox.innerHTML = '<div class="msg err">این رزرو قبلاً حذف شده بود.</div>';
+      }
+      if(!res.ok && res.status !== 404){
+        alertBox.innerHTML = '<div class="msg err">لغو رزرو با خطا مواجه شد، دوباره تلاش کن.</div>';
+        return;
+      }
+    }catch(err){
+      alertBox.innerHTML = '<div class="msg err">ارتباط با سرور برقرار نشد — رزرو حذف نشد.</div>';
+      return;
+    }
+    load();
+  });
+
+  async function start(){
+    // اجازه اعلان مرورگر را همان بار اول می‌گیریم (نیاز به کلیک کاربر دارد)
+    try{
+      if('Notification' in window && Notification.permission === 'default'){
+        await Notification.requestPermission();
+      }
+    }catch(e){}
+    await load();
+    if(pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(() => { if(!document.hidden) poll(); }, 15000);
+    poll(); // تا چراغ «پایش زنده» بلافاصله سبز شود
+  }
+
+  document.getElementById('load-btn').addEventListener('click', start);
+  tokenInput.addEventListener('keydown', e => { if(e.key === 'Enter') start(); });
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) poll(); });
+})();
+</script>
+<script src="../assets/transitions.js"></script>
+</body>
+</html>
